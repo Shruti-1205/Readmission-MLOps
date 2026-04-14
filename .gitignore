@@ -12,6 +12,7 @@ data/processed/
 .env
 .vscode/
 .idea/
+hf-space/
 
 # keep these portfolio artifacts tracked despite the blanket rules above
 !artifacts/
