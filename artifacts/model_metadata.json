@@ -1,0 +1,12 @@
+{
+  "model_name": "readmission-risk-champion",
+  "version": 1,
+  "run_id": "8c6176e2e7764065ab2044599a530587",
+  "alias": "production",
+  "metrics": {
+    "cv_roc_auc": 0.667,
+    "f1": 0.2785,
+    "pr_auc": 0.2344,
+    "roc_auc": 0.6776
+  }
+}

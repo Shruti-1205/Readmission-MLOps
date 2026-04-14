@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.ipynb_checkpoints/
+mlruns/
+mlartifacts/
+data/
+tests/
+docs/
+notebooks/
+*.md
+.env
+.vscode/
+.idea/
+.pytest_cache/

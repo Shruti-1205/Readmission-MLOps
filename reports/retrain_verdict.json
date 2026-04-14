@@ -1,0 +1,7 @@
+{
+  "promoted": false,
+  "candidate_roc_auc": 0.669,
+  "production_roc_auc": 0.7088,
+  "improvement_margin": 0.001,
+  "run_id": "56adb6928c7744f59086b3e1d1e38a5e"
+}

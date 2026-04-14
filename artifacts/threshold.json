@@ -1,0 +1,27 @@
+{
+  "best_threshold_f1": 0.55,
+  "best_threshold_cost_weighted": 0.42,
+  "fn_cost_ratio": 5.0,
+  "default_threshold_0_5": {
+    "precision": 0.1830966304650515,
+    "recall": 0.5810870525850641,
+    "f1": 0.27845420857596614,
+    "confusion": {
+      "tn": 11739,
+      "fp": 5867,
+      "fn": 948,
+      "tp": 1315
+    }
+  },
+  "tuned_threshold_f1": {
+    "precision": 0.21164962205424634,
+    "recall": 0.4206805125939019,
+    "f1": 0.2816151456885076,
+    "confusion": {
+      "tn": 14060,
+      "fp": 3546,
+      "fn": 1311,
+      "tp": 952
+    }
+  }
+}

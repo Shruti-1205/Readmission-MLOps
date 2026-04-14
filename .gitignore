@@ -1,0 +1,25 @@
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+mlruns/
+mlartifacts/
+data/raw/
+data/processed/
+*.pkl
+*.joblib
+.env
+.vscode/
+.idea/
+
+# keep these portfolio artifacts tracked despite the blanket rules above
+!artifacts/
+!artifacts/champion.pkl
+!artifacts/model_metadata.json
+!artifacts/threshold.json
+!reports/
+!reports/*.json
+!reports/*.html
+!docs/
+!docs/screenshots/

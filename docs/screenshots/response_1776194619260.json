@@ -1,0 +1,33 @@
+{
+  "readmit_probability": 0.27706432342529297,
+  "risk_category": "medium",
+  "top_features": [
+    {
+      "feature": "cat__diag_1_V58",
+      "shap_value": 0.46328064799308777,
+      "direction": "increases_risk"
+    },
+    {
+      "feature": "num__number_inpatient",
+      "shap_value": -0.25455963611602783,
+      "direction": "decreases_risk"
+    },
+    {
+      "feature": "cat__diag_1_386",
+      "shap_value": -0.20457322895526886,
+      "direction": "decreases_risk"
+    },
+    {
+      "feature": "cat__diag_3_250.6",
+      "shap_value": 0.13398297131061554,
+      "direction": "increases_risk"
+    },
+    {
+      "feature": "num__num_procedures",
+      "shap_value": -0.12449559569358826,
+      "direction": "decreases_risk"
+    }
+  ],
+  "model_name": "readmission-risk-champion",
+  "model_version": "1"
+}

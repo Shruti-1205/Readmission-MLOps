@@ -1,0 +1,32 @@
+{
+  "dataset_drift": false,
+  "drift_share": 0.08,
+  "drifted_column_count": 4,
+  "drifted_columns": [
+    {
+      "feature": "num_lab_procedures",
+      "stattest": "Wasserstein distance (normed)",
+      "drift_score": 0.4326
+    },
+    {
+      "feature": "num_medications",
+      "stattest": "Wasserstein distance (normed)",
+      "drift_score": 0.3628
+    },
+    {
+      "feature": "age",
+      "stattest": "Jensen-Shannon distance",
+      "drift_score": 0.1544
+    },
+    {
+      "feature": "insulin",
+      "stattest": "Jensen-Shannon distance",
+      "drift_score": 0.1417
+    }
+  ],
+  "thresholds": {
+    "drift_share": 0.3,
+    "individual_score": 0.2
+  },
+  "should_retrain": true
+}

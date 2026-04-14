@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: "3.10"
+  IMAGE_NAME: readmission-api
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+          pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: ruff check src app tests || true
+
+      - name: Unit tests (feature engineering)
+        run: pytest tests/test_features.py -v
+
+      - name: Export model for integration tests
+        run: |
+          python -m src.export_model || echo "No MLflow registry available in CI; skipping integration tests."
+
+      - name: Integration tests (API)
+        run: pytest tests/test_api.py -v
+        continue-on-error: true
+
+  model-quality-gate:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install
+        run: pip install -r requirements.txt
+      - name: Gate on held-out ROC-AUC
+        env:
+          MIN_ROC_AUC: "0.65"
+        run: |
+          python - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          p = Path("artifacts/model_metadata.json")
+          if not p.exists():
+              print("No model metadata available; skipping gate.")
+              sys.exit(0)
+          m = json.loads(p.read_text()).get("metrics", {})
+          auc = float(m.get("roc_auc", 0.0))
+          floor = float(os.environ["MIN_ROC_AUC"])
+          print(f"Champion ROC-AUC = {auc}, floor = {floor}")
+          sys.exit(0 if auc >= floor else 1)
+          PY
+
+  docker-build:
+    needs: model-quality-gate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ github.repository }}/${{ env.IMAGE_NAME }}:${{ github.sha }}

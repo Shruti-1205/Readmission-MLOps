@@ -1,0 +1,59 @@
+name: Drift check + conditional retrain
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    outputs:
+      should_retrain: ${{ steps.verdict.outputs.should_retrain }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: pip
+      - run: pip install -r requirements.txt
+
+      - name: Build reference + current datasets
+        run: python -m src.simulate_drift
+
+      - name: Run Evidently drift report
+        run: python -m src.drift
+        continue-on-error: true
+
+      - id: verdict
+        name: Export drift verdict
+        run: |
+          should=$(python -c "import json; print(json.load(open('reports/drift_verdict.json'))['should_retrain'])")
+          echo "should_retrain=$should" >> $GITHUB_OUTPUT
+          echo "Drift verdict should_retrain=$should"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: drift-report
+          path: |
+            reports/drift_report.html
+            reports/drift_verdict.json
+
+  retrain:
+    needs: drift-check
+    if: needs.drift-check.outputs.should_retrain == 'True'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install -r requirements.txt
+
+      - name: Retrain + promote-if-better
+        run: python -m src.retrain
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: retrain-verdict
+          path: reports/retrain_verdict.json
